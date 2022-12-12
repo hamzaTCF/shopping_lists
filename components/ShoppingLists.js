@@ -6,6 +6,7 @@ import {
   Alert
 } from 'react-native';
 import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ShoppingLists = ({ db, route }) => {
   const { userID } = route.params;
@@ -22,6 +23,7 @@ const ShoppingLists = ({ db, route }) => {
       documentsSnapshot.forEach(doc => {
         newLists.push({ id: doc.id, ...doc.data() })
       });
+      cacheShoppingLists(newLists)
       setLists(newLists);
     });
 
@@ -30,6 +32,14 @@ const ShoppingLists = ({ db, route }) => {
       if (unsubShoppinglists) unsubShoppinglists();
     }
   }, []);
+
+  const cacheShoppingLists = async (listsToCache) => {
+    try {
+      await AsyncStorage.setItem('shopping_lists', JSON.stringify(listsToCache));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
 
   const addShoppingList = async (newList) => {
