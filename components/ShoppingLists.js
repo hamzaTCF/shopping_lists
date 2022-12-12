@@ -15,6 +15,23 @@ const ShoppingLists = ({ db, route }) => {
   const [item1, setItem1] = useState("");
   const [item2, setItem2] = useState("");
 
+  useEffect(() => {
+    const q = query(collection(db, "shoppinglists"), where("uid", "==", userID));
+    const unsubShoppinglists = onSnapshot(q, (documentsSnapshot) => {
+      let newLists = [];
+      documentsSnapshot.forEach(doc => {
+        newLists.push({ id: doc.id, ...doc.data() })
+      });
+      setLists(newLists);
+    });
+
+    // Clean up code
+    return () => {
+      if (unsubShoppinglists) unsubShoppinglists();
+    }
+  }, []);
+
+
   const addShoppingList = async (newList) => {
     const newListRef = await addDoc(collection(db, "shoppinglists"), newList);
     if (newListRef.id) {
@@ -24,22 +41,6 @@ const ShoppingLists = ({ db, route }) => {
       Alert.alert("Unable to add. Please try later");
     }
   }
-
-  useEffect(() => {
-    const q = query(collection(db, "shoppinglists"), where("uid", "==", userID));
-    const unsubShoppinglists = onSnapshot(q, (documentsSnapshot) => {
-      let newLists = [];
-      documentsSnapshot.forEach(doc => {
-        newLists.push({ id: doc.id, ...doc.data() })
-      });
-      setLists(newLists);
-
-      // Clean up code
-      return () => {
-        if (unsubShoppinglists) unsubShoppinglists();
-      }
-    });
-  }, []);
 
   return (
     <View style={styles.container}>
