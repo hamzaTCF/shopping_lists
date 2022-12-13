@@ -32,7 +32,7 @@ const App = () => {
 
   useEffect(() => {
     if (connectionStatus.isConnected === false) {
-      Alert.alert("Connection Lost!");
+      Alert.alert("Connection Lost!!");
       disableNetwork(db);
     } else if (connectionStatus.isConnected === true) {
       enableNetwork(db);
